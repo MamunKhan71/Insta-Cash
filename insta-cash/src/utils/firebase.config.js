@@ -6,15 +6,15 @@ import { getAuth } from "firebase/auth"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDx1_EBNQweN7IU3Q7R_1Byg5vuXQcZmBU",
-    authDomain: "instacash-8beff.firebaseapp.com",
-    projectId: "instacash-8beff",
-    storageBucket: "instacash-8beff.appspot.com",
-    messagingSenderId: "158347229881",
-    appId: "1:158347229881:web:810fb39c1a7214ade67968"
+    apiKey: process.env.VITE_apiKey,
+    authDomain: process.env.VITE_authDomain,
+    projectId: process.env.VITE_projectId,
+    storageBucket: process.env.VITE_storageBucket,
+    messagingSenderId: process.env.VITE_messagingSenderId,
+    appId: process.env.VITE_appId
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = auth(app)
+const auth = getAuth(app)
 export default auth;

@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.19.3",
     "axios": "^1.7.2",
+    "chart.js": "^4.4.3",
     "firebase": "^10.12.3",
+    "heroicons": "^2.1.5",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
     "react": "^18.3.1",

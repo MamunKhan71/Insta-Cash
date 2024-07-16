@@ -16,7 +16,8 @@ const Register = () => {
             email,
             password,
             phone,
-            accType
+            accType,
+            status: "pending"
         }
         console.log(newUser);
         axios.post("http://localhost:5000/register", newUser)

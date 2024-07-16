@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const bcrypt = require('bcrypt')
 require('dotenv').config()
@@ -56,6 +56,18 @@ async function run() {
             console.log("Hit");
             const result = await userCollection.find().toArray()
             res.send(result)
+        })
+        app.patch('/user/update', async (req, res) => {
+            const id = req.body
+            const query = { _id: new ObjectId(id) }
+            console.log(query);
+            const cursor = {
+                $set: {
+                    status: 'active',
+                    balance: 40
+                }
+            }
+            const result = userCollection.updateOne(query, cursor, { upsert: true })
         })
     } finally {
         // Ensures that the client will close when you finish/error

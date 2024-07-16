@@ -9,20 +9,24 @@ const Login = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [passStatus, setPassStatus] = useState(false)
     const [logStatus, setLogStatus] = useState('')
-    const { loginUser } = useContext(AuthContext)
+    const { loginUser, user } = useContext(AuthContext)
+    console.log(user);
     const handleForm = data => {
         const { email, password } = data;
-        axios.post(`http://localhost:5000/decrypt?password=${password}`)
+        const userInfo = {
+            email,
+            password
+        }
+        axios.post(`http://localhost:5000/login`, userInfo)
             .then(result => {
-                const password = result.data
-                console.log(password);
-                loginUser(email, password)
+                const hashedPassword = result.data
+                loginUser(email, hashedPassword)
                     .then(() => console.log("Success"))
                     .catch(() => console.log("error"))
             })
             .catch(error => console.log(error))
     }
-        
+
     return (
         <div className="w-full lg:max-w-[600px] mx-auto px-4 lg:px-0 mt-12 ">
             <div className="flex items-center justify-center h-auto lg:h-[calc(100dvh-90px)] ">

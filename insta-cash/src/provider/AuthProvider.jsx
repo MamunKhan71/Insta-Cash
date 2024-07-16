@@ -16,13 +16,11 @@ export default function AuthProvider({ children }) {
     }, [])
     const createUser = async (email, password) => {
         setLoading(true)
-        console.log(password);
         return await createUserWithEmailAndPassword(auth, email, password)
     }
-    const loginUser = (email, password) => {
+    const loginUser = async (email, hashedPassword) => {
         setLoading(true)
-        console.log(email, password);
-        return signInWithEmailAndPassword(auth, email, password)
+        return await signInWithEmailAndPassword(auth, email, hashedPassword)
     }
     const authFunc = { createUser, user, loginUser }
     return (

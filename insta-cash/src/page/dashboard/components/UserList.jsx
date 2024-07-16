@@ -8,6 +8,11 @@ export default function UserList() {
             .then((response) => setUsers(response.data))
             .catch(error => console.log(error))
     }, [])
+    const handleApprove = (id) => {
+        axios.patch('http://localhost:5000/user/update', {id: id})
+            .then(() => console.log(res.data))
+            .catch(() => console.log(error))
+    }
     return (
         <div className="overflow-x-auto">
             <table className="table">
@@ -25,13 +30,13 @@ export default function UserList() {
                             <tr>
                                 <td>
                                     <div className="flex items-center gap-3">
-                                        <div className="avatar">
+                                        {/* <div className="avatar">
                                             <div className="mask mask-squircle h-12 w-12">
                                                 <img
                                                     src="https://img.daisyui.com/tailwind-css-component-profile-2@56w.png"
                                                     alt="Avatar Tailwind CSS Component" />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div>
                                             <div className="font-bold">{user?.name}</div>
                                             <div className="text-sm opacity-50">{user?.accType}</div>
@@ -45,7 +50,7 @@ export default function UserList() {
                                 </td>
                                 <td>{user?.status}</td>
                                 <th>
-                                    {user?.status === "pending" ? <button className="btn btn-xs">Approve</button> : <button className="btn btn-xs disabled:text-white disabled:bg-green-600" disabled>Approved</button>}
+                                    {user?.status === "pending" ? <button onClick={() => handleApprove(user?._id)} className="btn btn-xs">Approve</button> : <button className="btn btn-xs disabled:text-white disabled:bg-green-600" disabled>Approved</button>}
                                 </th>
                             </tr>
                         ))

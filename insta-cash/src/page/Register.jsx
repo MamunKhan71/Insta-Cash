@@ -17,7 +17,8 @@ const Register = () => {
             password,
             phone,
             accType,
-            status: "pending"
+            status: "pending",
+            balance: 0,
         }
         console.log(newUser);
         axios.post("http://localhost:5000/register", newUser)

@@ -1,15 +1,33 @@
 import { Link } from "react-router-dom";
-
 import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../provider/AuthProvider";
+import axios from "axios";
 const Register = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { createUser } = useContext(AuthContext)
     const [passStatus, setPassStatus] = useState(false)
     const [logStatus, setLogStatus] = useState('')
-    const handleForm = data => {
-        console.log(data);
+    const handleForm = async (data) => {
+        const { name, pin: password, phone, email, accType } = data
+        const newUser = {
+            name,
+            email,
+            password,
+            phone,
+            accType
+        }
+        console.log(newUser);
+        axios.post("http://localhost:5000/register", newUser)
+            .then(res => {
+                createUser(email, res.data.password)
+                    .then(() => console.log("User created successfully!"))
+                    .catch(() => console.log("Something went wrong"))
+            })
+            .catch(error => console.log(error))
     }
+
     return (
         <div className="w-full lg:max-w-[600px] mx-auto px-4 lg:px-0 mt-12 ">
             <div className="flex items-center justify-center h-auto lg:h-[calc(100dvh-90px)] ">
@@ -51,6 +69,11 @@ const Register = () => {
                                 <div className="w-full">
                                     <input {...register('email')} type="email" placeholder="Your email here" className="input bg-[#F5F9FE] w-full p-7 rounded-none" />
                                 </div>
+                                <select {...register('accType')} className="select bg-[#F5F9FE] w-full rounded-none text-primary">
+                                    <option disabled selected className="text-primary">Select account type</option>
+                                    <option value={'agent'}>Agent</option>
+                                    <option value={'user'}>User</option>
+                                </select>
                             </div>
                             <div className="w-full">
                                 <button type="submit" class="relative inline-flex items-center justify-center w-full px-12 py-3 overflow-hidden text-lg font-medium text-primary border-2 border-primary hover:text-white group hover:bg-gray-50">

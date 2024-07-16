@@ -34,17 +34,28 @@ async function run() {
         })
         app.post('/register', async (req, res) => {
             const newUser = req.body
-            const hashedPass = await bcrypt.hash(newUser.password, 4);
+            const hashedPass = bcrypt.hashSync(newUser.password, 4);
             newUser.password = hashedPass
             const result = await userCollection.insertOne(newUser)
             res.send({ password: hashedPass, result })
 
         })
-        app.post('/decrypt', async (req, res) => {
-            const password = req.query.password
-            console.log(password);
-            const hashedPassword = await bcrypt.hash(password, 4);
-            res.send(hashedPassword)
+        app.post('/login', async (req, res) => {
+            const { email, password } = req.body
+            const result = await userCollection.findOne({ email })
+            if (!result) {
+                res.send("Error")
+            }
+            const data = bcrypt.compareSync(password, result.password);
+            if (!data) {
+                res.send({ message: "Error!" })
+            }
+            res.send(result.password)
+        })
+        app.get('/users', async (req, res) => {
+            console.log("Hit");
+            const result = await userCollection.find().toArray()
+            res.send(result)
         })
     } finally {
         // Ensures that the client will close when you finish/error

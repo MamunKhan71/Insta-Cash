@@ -14,7 +14,7 @@ export default function UserList() {
             .catch(() => console.log(error))
     }
     return (
-        <div className="overflow-x-auto border rounded-xl shadow">
+        <div className="overflow-x-auto rounded-xl shadow">
             <table className="table">
                 <thead>
                     <tr>

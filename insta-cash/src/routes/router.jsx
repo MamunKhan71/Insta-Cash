@@ -7,6 +7,7 @@ import Dashboard from "../page/dashboard/Dashboard";
 import Homepage from "../page/dashboard/components/Homepage";
 import UserList from "../page/dashboard/components/UserList";
 import SendMoney from "../page/dashboard/components/SendMoney";
+import Cashout from "../page/dashboard/components/Cashout";
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
             {
                 path: 'send-money',
                 element: <SendMoney />
+            },
+            {
+                path: 'cashout',
+                element: <Cashout />
             }
         ]
     }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaHome, FaMoneyBill, FaUser } from 'react-icons/fa'
+import { FaMoneyCheckDollar } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 
 export default function Sidebar() {
@@ -19,6 +20,7 @@ export default function Sidebar() {
                     <li><Link className='font-medium' to={`/dashboard/home`}><FaHome /> Home</Link></li>
                     <li><Link className='font-medium' to={`/dashboard/users`}><FaUser /> Users</Link></li>
                     <li><Link className='font-medium' to={`/dashboard/send-money`}><FaMoneyBill /> Send Money</Link></li>
+                    <li><Link className='font-medium' to={`/dashboard/cashout`}><FaMoneyCheckDollar /> Cashout</Link></li>
                 </ul>
             </div>
         </div>

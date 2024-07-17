@@ -1,10 +1,12 @@
 import React, { useContext } from 'react'
 import Sidebar from './components/Sidebar'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../provider/AuthProvider'
+import { toast, Toaster } from 'sonner'
 
 export default function Dashboard() {
     const { user, logout } = useContext(AuthContext)
+    const navigate = useNavigate()
     return (
         <div className='font-poppins'>
             <div className="drawer ">
@@ -41,7 +43,11 @@ export default function Dashboard() {
                                         </summary>
                                         <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                             <li>
-                                                <button onClick={() => logout()}>Logout</button>
+                                                <button onClick={() => {
+                                                    logout()
+                                                        .then(() => toast("Signout success!"))
+                                                        .then(() => navigate('/login'))
+                                                }}>Logout</button>
                                             </li>
                                         </ul>
                                     </details>
@@ -74,6 +80,8 @@ export default function Dashboard() {
                     <Outlet />
                 </div>
             </div>
+            <Toaster />
+
         </div>
 
     )

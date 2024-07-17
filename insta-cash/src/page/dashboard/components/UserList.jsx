@@ -9,18 +9,19 @@ export default function UserList() {
             .catch(error => console.log(error))
     }, [])
     const handleApprove = (id) => {
-        axios.patch('http://localhost:5000/user/update', {id: id})
+        axios.patch('http://localhost:5000/user/update', { id: id })
             .then(() => console.log(res.data))
             .catch(() => console.log(error))
     }
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border rounded-xl shadow">
             <table className="table">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Contact</th>
                         <th>Status</th>
+                        <th>Balance</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -49,6 +50,7 @@ export default function UserList() {
                                     <span className="badge badge-ghost badge-sm">{user?.phone}</span>
                                 </td>
                                 <td>{user?.status}</td>
+                                <td>{user?.balance}</td>
                                 <th>
                                     {user?.status === "pending" ? <button onClick={() => handleApprove(user?._id)} className="btn btn-xs">Approve</button> : <button className="btn btn-xs disabled:text-white disabled:bg-green-600" disabled>Approved</button>}
                                 </th>

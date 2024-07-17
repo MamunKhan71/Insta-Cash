@@ -41,17 +41,29 @@ async function run() {
 
         })
         app.post('/login', async (req, res) => {
-            const { email, password } = req.body
-            const result = await userCollection.findOne({ email })
-            if (!result) {
-                res.send("Error")
+            const { email, password } = req.body;
+            let result = null; // Initialize result with null
+
+            // Check if the provided email includes '@' to determine if it's an email or phone number
+            if (!email.includes('@')) {
+                result = await userCollection.findOne({ phone: email });
+            } else {
+                result = await userCollection.findOne({ email: email });
             }
-            const data = bcrypt.compareSync(password, result.password);
-            if (!data) {
-                res.send({ message: "Error!" })
+
+            if (result) {
+                const isPasswordValid = bcrypt.compareSync(password, result.password);
+
+                if (!isPasswordValid) {
+                    return res.status(401).send({ message: "Invalid Password" });
+                }
+
+                return res.send({ message: "Login successful", password: result.password, email: result.email });
+            } else {
+                return res.status(400).send({ message: "User not found" });
             }
-            res.send(result.password)
-        })
+        });
+
         app.get('/users', async (req, res) => {
             console.log("Hit");
             const result = await userCollection.find().toArray()
@@ -68,6 +80,48 @@ async function run() {
                 }
             }
             const result = userCollection.updateOne(query, cursor, { upsert: true })
+        })
+
+        app.post('/send-money', async (req, res) => {
+            const sendMoneyInfo = req.body
+            // console.log(sendMoneyInfo);
+            const senderEmail = sendMoneyInfo.senderInfo.email
+            const userInfo = await userCollection.findOne({ email: senderEmail })
+            if (userInfo) {
+                if (userInfo.balance >= sendMoneyInfo.amount) {
+                    if (sendMoneyInfo.amount > 100) {
+                        const adminQuery = { email: "mkmamun031@gmail.com" }
+                        const admin = await userCollection.findOne(adminQuery)
+                        const adminPatch = {
+                            $set: {
+                                balance: admin.balance + 5
+                            }
+                        }
+                        const adminResult = await userCollection.updateOne({ _id: new ObjectId(admin._id) }, adminPatch)
+                        const receiverInfo = await userCollection.findOne({ phone: sendMoneyInfo.receiverInfo.phone })
+                        const receiverQuery = { _id: new ObjectId(receiverInfo._id) }
+                        const receiverBalance = receiverInfo.balance
+                        const deductionQuery = {
+                            $set: {
+                                balance: receiverBalance + (sendMoneyInfo.amount - 5)
+                            }
+                        }
+                        const deductionResult = await userCollection.updateOne(receiverQuery, deductionQuery)
+                    }
+                    const receiverInfo = await userCollection.findOne({ phone: sendMoneyInfo.receiverInfo.phone })
+                    const receiverQuery = { _id: new ObjectId(receiverInfo._id) }
+                    const receiverBalance = receiverInfo.balance
+                    const deductionQuery = {
+                        $set: {
+                            balance: receiverBalance + (sendMoneyInfo.amount)
+                        }
+                    }
+                    const deductionResult = await userCollection.updateOne(receiverQuery, deductionQuery)
+                    const userAmount = await userCollection.updateOne({ _id: new ObjectId(userInfo._id) }, { $set: { balance: userInfo.balance - sendMoneyInfo.amount } })
+                    res.status(200).send({ message: "Send Money Succesful" })
+                }
+                res.status(400).send({ message: "Insufficient Fund!" })
+            }
         })
     } finally {
         // Ensures that the client will close when you finish/error

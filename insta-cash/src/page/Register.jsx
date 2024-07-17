@@ -4,6 +4,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useContext, useState } from "react";
 import { AuthContext } from "../provider/AuthProvider";
 import axios from "axios";
+import { toast } from "sonner";
 const Register = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const { createUser } = useContext(AuthContext)
@@ -24,8 +25,8 @@ const Register = () => {
         axios.post("http://localhost:5000/register", newUser)
             .then(res => {
                 createUser(email, res.data.password)
-                    .then(() => console.log("User created successfully!"))
-                    .catch(() => console.log("Something went wrong"))
+                    .then(() => toast.success("User created successfully!"))
+                    .catch(() => toast.error("Something went wrong"))
             })
             .catch(error => console.log(error))
     }

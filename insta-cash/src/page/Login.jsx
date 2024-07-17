@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-
 import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../provider/AuthProvider";
+import { toast, Toaster } from "sonner";
 const Login = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const navigate = useNavigate()
     const [passStatus, setPassStatus] = useState(false)
     const [logStatus, setLogStatus] = useState('')
     const { loginUser, user } = useContext(AuthContext)
@@ -19,12 +20,14 @@ const Login = () => {
         }
         axios.post(`http://localhost:5000/login`, userInfo)
             .then(result => {
-                const hashedPassword = result.data
-                loginUser(email, hashedPassword)
-                    .then(() => console.log("Success"))
-                    .catch(() => console.log("error"))
+                const hashedPassword = result.data.password
+                const userEmail = result.data.email
+                loginUser(userEmail, hashedPassword)
+                    .then(() => toast.success("Login Successful"))
+                    .then(() => navigate('/dashboard'))
+                    .catch(() => toast.error("error"))
             })
-            .catch(error => console.log(error))
+            .catch(() => toast.error("Something went wrong!"))
     }
 
     return (
@@ -37,7 +40,7 @@ const Login = () => {
                         <form onSubmit={handleSubmit(handleForm)} className="space-y-4 w-full">
                             <div className=" mb-8 flex flex-col gap-4">
                                 <div className="w-full">
-                                    <input {...register('email')} type="email" placeholder="Your email here" className="input bg-[#F5F9FE] w-full p-7 rounded-none" />
+                                    <input {...register('email')} type="text" placeholder="Your email / phone here" className="input bg-[#F5F9FE] w-full p-7 rounded-none" />
                                 </div>
                                 <div className="w-full space-y-2">
                                     <label className="input flex items-center gap-2 bg-[#F5F9FE] p-7 rounded-none">
@@ -65,6 +68,7 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+            <Toaster />
         </div>
     );
 };

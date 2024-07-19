@@ -28,6 +28,22 @@ async function run() {
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
         const db = client.db('InstaCash')
         const userCollection = db.collection('users')
+        const transactionCollection = db.collection('transactions')
+
+        const transactionRecord = async (senderInfo, receiverInfo, transactionAmount, transactionType, transactionFee, transactionTime) => {
+            const transactionId = 'INX1234l454'
+            const transactionInfo = {
+                transactionId,
+                senderInfo,
+                receiverInfo,
+                transactionType,
+                transactionAmount,
+                transactionFee,
+                transactionTime
+            }
+            const result = await transactionCollection.insertOne(transactionInfo)
+            return result;
+        }
         const verifyPin = async (req, res, next) => {
             const userPassword = req.body.senderInfo?.password
             const dbUserPassword = await userCollection.findOne({ email: req.body.senderInfo?.email }).then(res => { return res.password })
@@ -130,8 +146,14 @@ async function run() {
                         await userCollection.updateOne(receiverQuery, deductionQuery);
                     }
 
-                    await userCollection.updateOne({ _id: new ObjectId(userInfo._id) }, { $set: { balance: userInfo.balance - sendMoneyInfo.amount } });
-                    return res.status(200).send({ message: "Send Money Successful" });
+                    const result = await userCollection.updateOne({ _id: new ObjectId(userInfo._id) }, { $set: { balance: userInfo.balance - sendMoneyInfo.amount } });
+                    // senderInfo, receiverInfo, transactionAmount, transactionType, transactionFee, transactionTime
+                    if (result.acknowledged) {
+                        const trxRecord = transactionRecord(userInfo.phone, receiverInfo.phone, sendMoneyInfo.amount, "Send Money", 5)
+                        if ((await trxRecord).acknowledged) {
+                            return res.status(200).send({ message: "Send Money Successful" });
+                        }
+                    }
                 } else {
                     return res.status(400).send({ message: "Insufficient Fund!" });
                 }
@@ -153,11 +175,16 @@ async function run() {
                 res.status(402).send("Something went wrong")
             }
             const result = await userCollection.updateOne({ _id: new ObjectId(receiverInfo._id) }, { $set: { balance: Number(receiverInfo.balance - (cashoutInfo.amount + cashoutInfo.cashoutCharge)) } })
-            console.log(result);
+            if (result.acknowledged) {
+                const trxRecord = transactionRecord(agentInfo.phone, receiverInfo.phone, cashoutInfo.amount, "Cash Out", cashoutInfo.cashoutCharge)
+                if ((await trxRecord).acknowledged) {
+                    return res.status(200).send({ message: "Cash out Successful" });
+                }
+            }
 
         })
         app.post('/cashin', verifyPin, async (req, res) => {
-            const data = req.body
+            const cashInInfo = req.body
             const phone = cashInInfo.receiverInfo.phone
             const agentInfo = await userCollection.findOne({ phone: phone })
             const receiverInfo = await userCollection.findOne({ email: cashInInfo.senderInfo.email })
@@ -169,9 +196,18 @@ async function run() {
                 res.status(402).send("Something went wrong")
             }
             const result = await userCollection.updateOne({ _id: new ObjectId(receiverInfo._id) }, { $set: { balance: Number(receiverInfo.balance + (cashoutInfo.amount)) } })
+            if (result.acknowledged) {
+                const trxRecord = transactionRecord(agentInfo.phone, receiverInfo.phone, cashInInfo.amount, "Cash In", 0)
+                if ((await trxRecord).acknowledged) {
+                    return res.status(200).send({ message: "Cash out Successful" });
+                }
+            }
             res.send(result)
         })
-
+        app.get('/transactions', async (req, res) => {
+            const result = await transactionCollection.find().toArray()
+            res.status(200).send(result)
+        })
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();

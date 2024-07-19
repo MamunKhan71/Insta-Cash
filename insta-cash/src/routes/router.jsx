@@ -9,6 +9,7 @@ import UserList from "../page/dashboard/components/UserList";
 import SendMoney from "../page/dashboard/components/SendMoney";
 import Cashout from "../page/dashboard/components/Cashout";
 import CashIn from "../page/dashboard/components/CashIn";
+import Transactions from "../page/dashboard/components/Transactions";
 
 export const router = createBrowserRouter([
     {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
             {
                 path: 'cashin',
                 element: <CashIn />
+            },
+            {
+                path: 'transactions',
+                element: <Transactions />
             }
         ]
     }

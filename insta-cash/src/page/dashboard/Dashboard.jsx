@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import Sidebar from './components/Sidebar'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../provider/AuthProvider'
 import { toast, Toaster } from 'sonner'
 
@@ -29,7 +29,7 @@ export default function Dashboard() {
                                 </svg>
                             </label>
                         </div>
-                        <div className="mx-2 flex-1 px-2 font-bold text-xl">InstaCash</div>
+                        <Link to={'/'} className="mx-2 flex-1 px-2 font-bold text-xl">InstaCash</Link>
                         <div className="hidden flex-none lg:block">
                             <ul className="menu menu-horizontal">
                                 <li>

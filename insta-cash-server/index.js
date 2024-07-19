@@ -69,10 +69,10 @@ async function run() {
             }
         });
 
-        app.post('/verify-pin', async (req, res) => {
-            const { email, password } = req.body
-            console.log(email, password);
-        })
+        // app.post('/verify-pin', async (req, res) => {
+        //     const { email, password } = req.body
+        //     console.log(email, password);
+        // })
 
         app.get('/users', async (req, res) => {
             console.log("Hit");
@@ -139,6 +139,38 @@ async function run() {
                 return res.status(400).send({ message: "Sender not found" });
             }
         });
+
+        app.post('/cashout', verifyPin, async (req, res) => {
+            const cashoutInfo = req.body
+            const phone = cashoutInfo.receiverInfo.phone
+            const agentInfo = await userCollection.findOne({ phone: phone })
+            if (agentInfo.accType !== 'agent') {
+                res.status(401).send("This is not an agent number")
+            }
+            const receiverInfo = await userCollection.findOne({ email: cashoutInfo.senderInfo.email })
+            const agentInfoUpdate = await userCollection.updateOne({ _id: new ObjectId(agentInfo._id) }, { $set: { balance: Number(agentInfo.balance + cashoutInfo.cashoutCharge + cashoutInfo.amount) } })
+            if (!agentInfoUpdate.acknowledged) {
+                res.status(402).send("Something went wrong")
+            }
+            const result = await userCollection.updateOne({ _id: new ObjectId(receiverInfo._id) }, { $set: { balance: Number(receiverInfo.balance - (cashoutInfo.amount + cashoutInfo.cashoutCharge)) } })
+            console.log(result);
+
+        })
+        app.post('/cashin', verifyPin, async (req, res) => {
+            const data = req.body
+            const phone = cashInInfo.receiverInfo.phone
+            const agentInfo = await userCollection.findOne({ phone: phone })
+            const receiverInfo = await userCollection.findOne({ email: cashInInfo.senderInfo.email })
+            if (agentInfo.accType !== 'agent') {
+                res.status(401).send("This is not an agent number")
+            }
+            const agentAccountUpdate = await userCollection.updateOne({ _id: new ObjectId(agentInfo._id) }, { $set: { balance: Number(agentInfo.balance - cashInInfo.amount) } })
+            if (!agentAccountUpdate.acknowledged) {
+                res.status(402).send("Something went wrong")
+            }
+            const result = await userCollection.updateOne({ _id: new ObjectId(receiverInfo._id) }, { $set: { balance: Number(receiverInfo.balance + (cashoutInfo.amount)) } })
+            res.send(result)
+        })
 
     } finally {
         // Ensures that the client will close when you finish/error

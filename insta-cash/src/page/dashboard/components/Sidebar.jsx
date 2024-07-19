@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaHome, FaMoneyBill, FaUser } from 'react-icons/fa'
-import { FaMoneyCheckDollar } from 'react-icons/fa6'
+import { FaCartShopping, FaMoneyCheckDollar } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 
 export default function Sidebar() {
@@ -15,12 +15,13 @@ export default function Sidebar() {
             </div>
             <div className="drawer-side">
                 <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+                <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4 space-y-3">
                     {/* Sidebar content here */}
-                    <li><Link className='font-medium' to={`/dashboard/home`}><FaHome /> Home</Link></li>
-                    <li><Link className='font-medium' to={`/dashboard/users`}><FaUser /> Users</Link></li>
-                    <li><Link className='font-medium' to={`/dashboard/send-money`}><FaMoneyBill /> Send Money</Link></li>
-                    <li><Link className='font-medium' to={`/dashboard/cashout`}><FaMoneyCheckDollar /> Cashout</Link></li>
+                    <li><Link className='font-medium text-lg' to={`/dashboard/home`}><FaHome /> Home</Link></li>
+                    <li><Link className='font-medium text-lg' to={`/dashboard/users`}><FaUser /> Users</Link></li>
+                    <li><Link className='font-medium text-lg' to={`/dashboard/send-money`}><FaMoneyBill /> Send Money</Link></li>
+                    <li><Link className='font-medium text-lg' to={`/dashboard/cashout`}><FaMoneyCheckDollar /> Cash Out</Link></li>
+                    <li><Link className='font-medium text-lg' to={`/dashboard/cashin`}><FaCartShopping /> Cash In</Link></li>
                 </ul>
             </div>
         </div>

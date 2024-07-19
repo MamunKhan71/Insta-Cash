@@ -4,7 +4,7 @@ import { FaArrowRight } from 'react-icons/fa';
 import { toast, Toaster } from 'sonner';
 import { AuthContext } from '../../../provider/AuthProvider';
 import axios from 'axios';
-export default function Cashout() {
+export default function CashIn() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const { user } = useContext(AuthContext)
     const [amount, setAmount] = useState(0);
@@ -14,14 +14,13 @@ export default function Cashout() {
     useEffect(() => {
         const numericAmount = Number(watchedAmount);
         setAmount(numericAmount)
-        setTransactionFee(numericAmount * (1.5 / 100));
+        setTransactionFee((numericAmount * (1.5 / 100)).toFixed(2));
         setTotalAmount(transactionFee + amount)
     }, [watchedAmount])
 
     const handleForm = data => {
         const { phone, pin } = data;
-        console.log(phone, pin);
-        const cashoutInfo = {
+        const cashInInfo = {
             receiverInfo: {
                 phone
             },
@@ -30,10 +29,10 @@ export default function Cashout() {
                 password: pin
             },
             amount: Number(amount),
-            cashoutCharge: Number(transactionFee)
+            // cashoutCharge: Number(transactionFee)
         }
 
-        axios.post('http://localhost:5000/cashout', cashoutInfo)
+        axios.post('http://localhost:5000/cashin', cashInInfo)
             .then((res) => toast.success(res.data.message))
             .catch((error) => toast.error(error.response.data.message))
     }
@@ -43,12 +42,12 @@ export default function Cashout() {
                 <div className="flex items-center justify-center h-auto lg:h-[calc(100dvh-90px)] ">
                     <div className="flex flex-col items-center font-poppins w-full border p-12 shadow-lg">
                         <div className="space-y-7 flex items-center flex-col w-full">
-                            <h1 className="text-primary text-3xl font-semibold">Cashout</h1>
-                            <p className="text-primary text-center text-sm">Cashout via Insta-Cash Agent</p>
+                            <h1 className="text-primary text-3xl font-semibold">Cash In</h1>
+                            <p className="text-primary text-center text-sm">Cash in from Insta-Cash Agent</p>
                             <form onSubmit={handleSubmit(handleForm)} className="space-y-4 w-full">
                                 <div className=" mb-8 flex flex-col gap-4">
                                     <div className="w-full">
-                                        <input {...register('phone')} type="text" placeholder="Agent Phone Number" className="input bg-[#F5F9FE] w-full p-7 rounded-none" />
+                                        <input {...register('phone')} type="text" placeholder="Customer Phone Number" className="input bg-[#F5F9FE] w-full p-7 rounded-none" />
                                     </div>
                                     <div className="w-full space-y-2">
                                         <label className="input flex items-center gap-2 bg-[#F5F9FE] p-7 rounded-none">
@@ -60,15 +59,15 @@ export default function Cashout() {
                                         <p>Amount</p>
                                         <p>{amount} Tk</p>
                                     </div>
-                                    <div className='flex justify-between font-semibold'>
+                                    {/* <div className='flex justify-between font-semibold'>
                                         <p>Transaction Fee</p>
                                         <p>{transactionFee} Tk</p>
-                                    </div>
-                                    <hr />
+                                    </div> */}
+                                    {/* <hr />
                                     <div className='flex justify-between font-bold'>
                                         <p>Total</p>
                                         <p>{transactionFee + amount} Tk</p>
-                                    </div>
+                                    </div> */}
 
                                     {amount > 0 && <p className='text-red-400 text-xs text-right font-medium'>1.5% of the transaction fee applicable  *</p>}
                                 </div>

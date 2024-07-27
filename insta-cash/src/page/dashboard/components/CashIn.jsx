@@ -39,7 +39,7 @@ export default function CashIn() {
     return (
         <div>
             <div className="w-full lg:max-w-[600px] mx-auto px-4 lg:px-0 mt-12 ">
-                <div className="flex items-center justify-center h-auto lg:h-[calc(100dvh-90px)] ">
+                <div className="flex items-center justify-center h-auto  ">
                     <div className="flex flex-col items-center font-poppins w-full border p-12 shadow-lg">
                         <div className="space-y-7 flex items-center flex-col w-full">
                             <h1 className="text-primary text-3xl font-semibold">Cash In</h1>

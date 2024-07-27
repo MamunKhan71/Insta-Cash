@@ -20,7 +20,6 @@ export default function Cashout() {
 
     const handleForm = data => {
         const { phone, pin } = data;
-        console.log(phone, pin);
         const cashoutInfo = {
             receiverInfo: {
                 phone
@@ -30,9 +29,8 @@ export default function Cashout() {
                 password: pin
             },
             amount: Number(amount),
-            cashoutCharge: Number(transactionFee)
+            cashoutCharge: Number(transactionFee.toFixed(2))
         }
-
         axios.post('http://localhost:5000/cashout', cashoutInfo)
             .then((res) => toast.success(res.data.message))
             .catch((error) => toast.error(error.response.data.message))
@@ -40,7 +38,7 @@ export default function Cashout() {
     return (
         <div>
             <div className="w-full lg:max-w-[600px] mx-auto px-4 lg:px-0 mt-12 ">
-                <div className="flex items-center justify-center h-auto lg:h-[calc(100dvh-90px)] ">
+                <div className="flex items-center justify-center h-auto ">
                     <div className="flex flex-col items-center font-poppins w-full border p-12 shadow-lg">
                         <div className="space-y-7 flex items-center flex-col w-full">
                             <h1 className="text-primary text-3xl font-semibold">Cashout</h1>

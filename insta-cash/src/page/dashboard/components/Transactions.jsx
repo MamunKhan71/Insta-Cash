@@ -2,10 +2,10 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 
 export default function Transactions() {
-    const [users, setUsers] = useState([])
+    const [transactions, setTransactions] = useState([])
     useEffect(() => {
         axios.get('http://localhost:5000/transactions')
-            .then((response) => setUsers(response.data))
+            .then((response) => setTransactions(response.data))
             .catch(error => console.log(error))
     }, [])
     const handleApprove = (id) => {
@@ -30,7 +30,7 @@ export default function Transactions() {
                 </thead>
                 <tbody>
                     {
-                        users?.map(user => (
+                        transactions?.map(user => (
                             <tr>
                                 <td>
                                     <div className="flex items-center gap-3">
@@ -42,21 +42,19 @@ export default function Transactions() {
                                             </div>
                                         </div> */}
                                         <div>
-                                            <div className="font-bold">{user?.name}</div>
-                                            <div className="text-sm opacity-50">{user?.accType}</div>
+                                            <div className="font-bold">{user?.transactionId}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    {user?.email}
-                                    <br />
-                                    <span className="badge badge-ghost badge-sm">{user?.phone}</span>
+                                    {user?.senderInfo}
                                 </td>
-                                <td>{user?.status}</td>
-                                <td>{user?.balance}</td>
-                                {/* <th>
-                                    {user?.status === "pending" ? <button onClick={() => handleApprove(user?._id)} className="btn btn-xs">Approve</button> : <button className="btn btn-xs disabled:text-white disabled:bg-green-600" disabled>Approved</button>}
-                                </th> */}
+                                <td>{user?.receiverInfo}</td>
+                                <td>{user?.transactionType}</td>
+                                <td>{user?.transactionAmount}</td>
+                                <td>{user?.transactionFee}</td>
+                                <td>{user?.transactionTime}</td>
+                                
                             </tr>
                         ))
                     }

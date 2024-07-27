@@ -9,7 +9,7 @@ export default function Dashboard() {
     const navigate = useNavigate()
     return (
         <div className='font-poppins'>
-            <div className="drawer ">
+            <div className="drawer">
                 <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content flex flex-col">
                     {/* Navbar */}
@@ -25,7 +25,8 @@ export default function Dashboard() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                        d="M4 6h16M4 12h16M4 18h16">
+                                    </path>
                                 </svg>
                             </label>
                         </div>

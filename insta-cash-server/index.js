@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const bcrypt = require('bcrypt')
+const generateUniqueId = require('generate-unique-id');
 require('dotenv').config()
 const app = express()
 app.use(express.json())
@@ -13,6 +14,7 @@ app.use(cors({
 }))
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q3zjxg2.mongodb.net/?appName=Cluster0`;
+// const uri = `mongodb://localhost:27017`;
 
 const client = new MongoClient(uri, {
     serverApi: {
@@ -21,6 +23,10 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+const getTransactionId = () => {
+    const id = generateUniqueId()
+    return id;
+}
 async function run() {
     try {
         await client.connect();
@@ -31,7 +37,7 @@ async function run() {
         const transactionCollection = db.collection('transactions')
 
         const transactionRecord = async (senderInfo, receiverInfo, transactionAmount, transactionType, transactionFee, transactionTime) => {
-            const transactionId = 'INX1234l454'
+            const transactionId = getTransactionId().toUpperCase()
             const transactionInfo = {
                 transactionId,
                 senderInfo,
@@ -112,6 +118,7 @@ async function run() {
             const sendMoneyInfo = req.body;
             const senderEmail = sendMoneyInfo.senderInfo.email;
             const userInfo = await userCollection.findOne({ email: senderEmail });
+            const receiverInfo = await userCollection.findOne({ phone: sendMoneyInfo.receiverInfo.phone });
 
             if (userInfo) {
                 if (userInfo.balance >= sendMoneyInfo.amount) {
@@ -125,7 +132,6 @@ async function run() {
                         };
                         await userCollection.updateOne({ _id: new ObjectId(admin._id) }, adminPatch);
 
-                        const receiverInfo = await userCollection.findOne({ phone: sendMoneyInfo.receiverInfo.phone });
                         const receiverQuery = { _id: new ObjectId(receiverInfo._id) };
                         const receiverBalance = receiverInfo.balance;
                         const deductionQuery = {
@@ -149,7 +155,8 @@ async function run() {
                     const result = await userCollection.updateOne({ _id: new ObjectId(userInfo._id) }, { $set: { balance: userInfo.balance - sendMoneyInfo.amount } });
                     // senderInfo, receiverInfo, transactionAmount, transactionType, transactionFee, transactionTime
                     if (result.acknowledged) {
-                        const trxRecord = transactionRecord(userInfo.phone, receiverInfo.phone, sendMoneyInfo.amount, "Send Money", 5)
+                        const trxTime = new Date()
+                        const trxRecord = transactionRecord(userInfo.phone, receiverInfo.phone, sendMoneyInfo.amount, "Send Money", Number(5.00), trxTime)
                         if ((await trxRecord).acknowledged) {
                             return res.status(200).send({ message: "Send Money Successful" });
                         }
@@ -176,10 +183,12 @@ async function run() {
             }
             const result = await userCollection.updateOne({ _id: new ObjectId(receiverInfo._id) }, { $set: { balance: Number(receiverInfo.balance - (cashoutInfo.amount + cashoutInfo.cashoutCharge)) } })
             if (result.acknowledged) {
-                const trxRecord = transactionRecord(agentInfo.phone, receiverInfo.phone, cashoutInfo.amount, "Cash Out", cashoutInfo.cashoutCharge)
+                const trxTime = new Date()
+                const trxRecord = transactionRecord(agentInfo.phone, receiverInfo.phone, cashoutInfo.amount, "Cash Out", Number(cashoutInfo.cashoutCharge), trxTime)
                 if ((await trxRecord).acknowledged) {
                     return res.status(200).send({ message: "Cash out Successful" });
                 }
+                return res.status(402).send({ message: "Cash out Failed" });
             }
 
         })
